@@ -29,7 +29,7 @@ let enemy = {
 };
 
 // Movement
-function movePlayer() {
+function movement() {
   let newX = player.x;
   let newY = player.y;
 
@@ -38,12 +38,20 @@ function movePlayer() {
   if (keys["ArrowLeft"]) newX -= player.speed;
   if (keys["ArrowRight"]) newX += player.speed;
 
+  // Boundary block
+  if (newX - player.radius < 0 || newX + player.radius > canvas.width) {
+    newX = player.x;
+  }
+  if (newY - player.radius < 0 || newY + player.radius > canvas.height) {
+    newY = player.y;
+  }
+
+  // Obstacle check
   if (!isCollidingWithObstacle(newX, newY)) {
     player.x = newX;
     player.y = newY;
   }
 }
-
 // Obstacle collision
 function isCollidingWithObstacle(px, py) {
   for (let o of obstacles) {
@@ -84,6 +92,11 @@ function checkEnemyCollision() {
 // Draw everything
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+// Red boundary
+ctx.strokeStyle = "red";
+ctx.lineWidth = 5;
+ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
 
   // Player
   ctx.beginPath();
