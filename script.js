@@ -36,7 +36,7 @@ let enemy = {
   direction: 1
 };
 
-// Goal (win zone)
+// Goal
 let goal = {
   x: 450,
   y: 350,
@@ -53,7 +53,6 @@ function movement() {
   if (keys["ArrowLeft"]) newX -= player.speed;
   if (keys["ArrowRight"]) newX += player.speed;
 
-  // Boundary with margin
   const margin = 5;
 
   if (newX - player.radius < margin || newX + player.radius > canvas.width - margin) {
@@ -64,12 +63,10 @@ function movement() {
     newY = player.y;
   }
 
-  // Move X
   if (!isCollidingWithObstacle(newX, player.y)) {
     player.x = newX;
   }
 
-  // Move Y
   if (!isCollidingWithObstacle(player.x, newY)) {
     player.y = newY;
   }
@@ -95,7 +92,7 @@ function isCollidingWithObstacle(px, py) {
 function moveEnemy() {
   enemy.y += enemy.speed * enemy.direction;
 
-  if (enemy.y > 300 || enemy.y < 50) {
+  if (enemy.y > canvas.height - enemy.radius || enemy.y < enemy.radius) {
     enemy.direction *= -1;
   }
 }
@@ -107,11 +104,11 @@ function checkEnemyCollision() {
   let distance = Math.sqrt(dx * dx + dy * dy);
 
   if (distance < player.radius + enemy.radius) {
-    // Reset player position ONLY (no timer reset)
     player.x = 50;
     player.y = 50;
   }
 }
+
 // Win check
 function checkWin() {
   let dx = player.x - goal.x;
@@ -123,7 +120,7 @@ function checkWin() {
   }
 }
 
-// Click (Play Again button)
+// Click (Play Again)
 canvas.addEventListener("click", function (e) {
   if (gameState === "won") {
     let rect = canvas.getBoundingClientRect();
@@ -145,7 +142,7 @@ canvas.addEventListener("click", function (e) {
   }
 });
 
-// Draw everything
+// Draw
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -153,15 +150,14 @@ function draw() {
   ctx.fillStyle = "black";
   ctx.font = "20px Arial";
   ctx.textAlign = "left";
-let minutes = Math.floor(elapsedTime / 60);
-let seconds = elapsedTime % 60;
 
-// adds leading zero (e.g. 1:05 instead of 1:5)
-seconds = seconds < 10 ? "0" + seconds : seconds;
+  let minutes = Math.floor(elapsedTime / 60);
+  let seconds = elapsedTime % 60;
+  seconds = seconds < 10 ? "0" + seconds : seconds;
 
-ctx.fillText(`Time: ${minutes}:${seconds}`, 10, 25);
+  ctx.fillText(`Time: ${minutes}:${seconds}`, 10, 25);
 
-  // Red boundary
+  // Boundary
   ctx.strokeStyle = "red";
   ctx.lineWidth = 5;
   ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
@@ -199,7 +195,12 @@ ctx.fillText(`Time: ${minutes}:${seconds}`, 10, 25);
     ctx.font = "30px Arial";
     ctx.textAlign = "center";
     ctx.fillText("YOU WON!", canvas.width / 2, canvas.height / 2 - 40);
-    ctx.fillText("Time: " + elapsedTime + "s", canvas.width / 2, canvas.height / 2 - 10);
+
+    let winMinutes = Math.floor(elapsedTime / 60);
+    let winSeconds = elapsedTime % 60;
+    winSeconds = winSeconds < 10 ? "0" + winSeconds : winSeconds;
+
+    ctx.fillText(`Time: ${winMinutes}:${winSeconds}`, canvas.width / 2, canvas.height / 2 - 10);
 
     ctx.fillStyle = "green";
     ctx.fillRect(canvas.width / 2 - 60, canvas.height / 2 + 10, 120, 40);
@@ -212,16 +213,12 @@ ctx.fillText(`Time: ${minutes}:${seconds}`, 10, 25);
 
 // Game loop
 function gameLoop() {
-if (gameState === "won" && elapsedTime !== null) {
-  // lock it once
-  elapsedTime = elapsedTime;
-}
+  if (gameState === "playing") {
     movement();
     moveEnemy();
     checkEnemyCollision();
     checkWin();
 
-    // Update timer
     elapsedTime = Math.floor((Date.now() - startTime) / 1000);
   }
 
