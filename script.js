@@ -48,11 +48,17 @@ function movement() {
   }
 
   // Obstacle check
-  if (!isCollidingWithObstacle(newX, newY)) {
-    player.x = newX;
-    player.y = newY;
+// Move X first
+if (!isCollidingWithObstacle(newX, player.y)) {
+  player.x = newX;
+}
+
+// Move Y separately
+if (!isCollidingWithObstacle(player.x, newY)) {
+  player.y = newY;
   }
 }
+
 // Obstacle collision
 function isCollidingWithObstacle(px, py) {
   for (let o of obstacles) {
