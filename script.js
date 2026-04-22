@@ -1,6 +1,9 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+canvas.width = 500;
+canvas.height = 400;
+
 let player = {
   x: 50,
   y: 50,
@@ -26,8 +29,8 @@ let obstacles = [
 ];
 
 let enemies = [
-  { x: 300, y: 50, radius: 10, speed: 2, direction: 1, axis: "y", color: "red" },
-  { x: 500, y: 250, radius: 10, speed: 4, direction: -1, axis: "x", color: "purple" }
+  { x: 300, y: 50, radius: 10, speed: 2, direction: 1, axis: "y", color: "red", startX: 300, startY: 50 },
+  { x: 500, y: 250, radius: 10, speed: 4, direction: -1, axis: "x", color: "purple", startX: 500, startY: 250 }
 ];
 
 let goal = {
@@ -72,7 +75,9 @@ function isCollidingWithObstacle(px, py) {
     let dx = px - closestX;
     let dy = py - closestY;
 
-    if ((dx * dx + dy * dy) < (player.radius * player.radius)) return true;
+    if (dx * dx + dy * dy < player.radius * player.radius) {
+      return true;
+    }
   }
   return false;
 }
@@ -127,34 +132,29 @@ function resetGame() {
   elapsedTime = 0;
   gameState = "playing";
 
-  enemies.forEach((enemy, i) => {
-    if (i === 0) {
-      enemy.x = 300;
-      enemy.y = 50;
-      enemy.direction = 1;
-    }
-    if (i === 1) {
-      enemy.x = 500;
-      enemy.y = 250;
-      enemy.direction = -1;
-    }
-  });
+  for (let enemy of enemies) {
+    enemy.x = enemy.startX;
+    enemy.y = enemy.startY;
+  }
+
+  enemies[0].direction = 1;
+  enemies[1].direction = -1;
 }
 
-canvas.addEventListener("click", function (e) {
-  if (gameState === "won") {
-    let rect = canvas.getBoundingClientRect();
-    let mouseX = e.clientX - rect.left;
-    let mouseY = e.clientY - rect.top;
+canvas.addEventListener("click", (e) => {
+  if (gameState !== "won") return;
 
-    if (
-      mouseX > canvas.width / 2 - 60 &&
-      mouseX < canvas.width / 2 + 60 &&
-      mouseY > canvas.height / 2 + 10 &&
-      mouseY < canvas.height / 2 + 50
-    ) {
-      resetGame();
-    }
+  let rect = canvas.getBoundingClientRect();
+  let mouseX = e.clientX - rect.left;
+  let mouseY = e.clientY - rect.top;
+
+  if (
+    mouseX > canvas.width / 2 - 60 &&
+    mouseX < canvas.width / 2 + 60 &&
+    mouseY > canvas.height / 2 + 10 &&
+    mouseY < canvas.height / 2 + 50
+  ) {
+    resetGame();
   }
 });
 
