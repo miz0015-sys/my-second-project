@@ -27,17 +27,25 @@ let obstacles = [
   { x: 120, y: 40, width: 150, height: 30 },
   { x: 400, y: 0, width: 40, height: 200 },
   { x: 50, y: 80, width: 30, height: 280 },
-  { x: 300, y: 260, width: 100, height: 20 }
+  { x: 350, y: 260, width: 150, height: 20 }
 ];
 
-// Enemy
-let enemy = {
+let enemy1 = {
   x: 300,
   y: 50,
   radius: 10,
   speed: 2,
   direction: 1
 };
+
+let enemy2 = {
+  x: 500,
+  y: 250,
+  radius: 10,
+  speed: 4,
+  direction: -1
+};
+
 
 // Goal
 let goal = {
